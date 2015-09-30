@@ -9,16 +9,14 @@ Readme for running cysbar.py locally
 
 Usage
 -----
-Barcoding function
 ```
+Barcoding function:
 cysbar.py -b POS1[:BARCODE1] [-b POS2[:BARCODE2] [-b ...]] [-B BARCODE.txt] [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] >OUTPUT.fa
-```
-Reconstructing function
-```
+
+Reconstructing function:
 cysbar.py -r -b POS1:[BARCODE1] [-b POS2:[BARCODE2] [-b ...]] [-B BARCODE.txt] [-s OUTPUT.csv] [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] >OUTPUT.fa
-```
+
 Arguments:
-```
 -h, --help        Print this help information
 -r                Operate in reconstruction mode (i.e. restoring residues)
 -b POS[:BARCODE]  Specify the POSition to replace with BARCODE
