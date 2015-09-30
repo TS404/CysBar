@@ -27,6 +27,6 @@ Arguments:
 -B BARCODE.txt    Use file named BARCODE.txt to source barcodes from, one per line
 -s OUTPUT.csv     Produce (and store) summary statistics file named OUTPUT.csv
 -S SEPARATOR      String to enclose replaced residues when placed in FastA ID (Default: '__BC__')
-INPUT.fa          Input fasta sequences. '-' to read from standard input (Default)
-\>OUTPUT.fa         Output fasta sequences are written to standard output.  Redirect to OUTPUT.fa
+<INPUT.fa          Input fasta sequences. '-' to read from standard input (Default)
+>OUTPUT.fa         Output fasta sequences are written to standard output.  Redirect to OUTPUT.fa
 ```
