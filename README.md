@@ -35,7 +35,7 @@ Manual
 
 ### 1 Readme introduction
 
-This readme describes in detail how to use the python script `cysbar.py` locally and how to use the data analysing excel spreadsheet `loopproperties.xlsx`. For simple online use of the scripts a webtool is available at [cysbar.science.latrobe.edu.au](http://cysbar.science.latrobe.edu.au).
+This readme describes in detail how to use the python script `cysbar.py` locally and how to use the data analysing excel spreadsheet `loopproperties.xlsx`. For simple online use of the scripts, a webtool is available at: [cysbar.science.latrobe.edu.au](http://cysbar.science.latrobe.edu.au).
 
 
 ### 2 Python
