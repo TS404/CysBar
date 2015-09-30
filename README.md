@@ -44,16 +44,16 @@ The script is in the python programming language and runs on linux, or mac machi
 [www.python.org](https://www.python.org/about/gettingstarted/)  
 The script is annotated and can be opened by any text editor to read and edit.  
 
+Both barcoding and reconstructing functions need the user to define some basic parameters (arguments). These are entered after `cysbar.py` with `-x` commands.
 
 ### 3 Using the barcoding function
 
-Both barcoding and reconstructing functions need the user to define some basic parameters (arguments). These are entered after `cysbar.py` with `-x` commands.
+The input alignment is barcoded using `cysbar.py`, which replaces columns of a fasta file (specified by `-b` arguments). Removed residues are stored in the fasta ID between `__BC__` separators. Custom barcodes can be used either by providing a list of sequences (`-B` argument) or by defining a custom barcode to be used at a specific position (`-b POS:BARCODE` argument).
 
 Command for barcoding:
 ```
 cysbar.py -b POS1 -b POS2 ...
 ```
-Where the position of each column to be barcoded is specifiec by a `-b` argument. Removed residues are stored in the fasta ID between `__BC__` separators. Custom barcodes can be used either by providing a list of sequences (`-B` argument) or by defining a custom barcode to be used at a specific position (`-b POS:BARCODE` argument).
 
 Optional arguments:
 ```
@@ -70,21 +70,26 @@ cysbar.py -b 11 -b 29 -b 47 -b 51 -b 73 -b 90 -b 92 -b 97 example.fa >BARCODED_e
 ```
 The above command will barcode the 11th, 29th... etc. columns of the `example.fa` alignment using the deafult barcode set, creating an output alignment called `BARCODED_example.fa`. The `BARCODED_example.fa` file can then be re-aligned by any standard alignment program (e.g. ClustalΩ, Probcons, Muscle).
 
-*Notes:*  
+*Notes*:  
 When several sub-group alignments need to be combined into a single alignment barcoded alignment, the individual sub-group alignments should be barcoded independently with `cysbar.py` (as in the example figures used in the manuscript).
 The barcoded alignments should then be concatenated into a single alignment file. This single combined alignment can be re-aligned with any standard alignment program. The reconstruction function can then be run on the re-aligned, combined alignment.
 
 ### 4 Using the reconstructer function
 
-Once the barcoded alignment has been re-aligned by an appropriate program, `cysbar.py -r` replaces the barcoded columns of a fasta file with the original columns that were removed and saved in the fasta ID by barcoding function. Additionally, it can provide summary file of the length, hydrophobicity and charge of each inter-cysteine region. To use it follow these steps:
+Once the barcoded alignment has been re-aligned by an appropriate program, `cysbar.py -r` replaces the barcoded columns of a fasta file with the original columns that were removed and saved in the fasta ID by barcoding function. Additionally, it can provide summary file of the length, hydrophobicity and charge of each inter-cysteine region (`-s` argument).
 
+Command for reconstructing:
 ```
+cysbar.py -r 
+```
+Optional arguments:
+```
+-s OUTPUT.csv     Produce (and save) summary statistics file named OUTPUT.csv
 -b POS:BARCODE    Define the custom barcode used at this position
 -B BARCODE.txt    Use file named BARCODE.txt to source used barcodes from, one per line
 -S SEPARATOR      String that was used to enclose replaced residues in the FastA ID (Default: '__BC__')
 INPUT.fa          Input fasta file (default = standard input)
 >OUTPUT.fa        Output fasta file (default = standard output)
--s OUTPUT.csv     Produce (and save) summary statistics file named OUTPUT.csv
 ```
 
 Example:
@@ -93,14 +98,13 @@ cysbar.py -r -s stats.csv newalign.fa >FINAL.fa
 ```
 The above command will restore the original sequences of the `newalign.fa` alignment, creating an output alignment called `FINAL.fa` and a summary of statistics called `stats.csv`.
 
-*Notes:*  
-If the default barcodes was used, `-b` arguments are unnecessary as the script will search for the default barcode sequences.
-If barcode sequences were used, the same sequences must be definied in the `cysbar.py -r` command. For calculating loop properties, all cysteines are assumed to be oxidised (i.e. involved in disulphide bridges).
+*Notes*:  
+If the default barcodes was used, `-b` arguments are unnecessary since the script will search for the default barcode sequences. If custom barcode sequences were used, the same sequences must be definied in the `cysbar.py -r` command. For calculating loop properties, all cysteines are assumed to be oxidised (i.e. involved in disulphide bridges).
 
 
 ### 5 Using loopproperties.xlsx
 
-If `cysbar.py -r -s` has been commanded to generate a statistics summary csv file, the data from this can be copy-pasted into `loopproperties.xlsx` which will provide summary graphs. To use it follow these steps:
+If `cysbar.py -r` has been commanded to generate a statistics summary csv file (`-s`argument), the data from this can be copy-pasted into `loopproperties.xlsx` which will provide summary graphs. To use it follow these steps:
 
 1. In Excel, open both the stastistics csv file and `loopproperties.xlsx`
 2. Copy the whole spreadsheet of the statistics csv file
@@ -111,5 +115,5 @@ If `cysbar.py -r -s` has been commanded to generate a statistics summary csv fil
  c. Charge – net coulomb charge  
  d. Figures – a summary of bar charts and histograms from the other sheets  
 
-*Notes:*  
+*Notes*:  
 This spreadcheet only functions for a maximum of 8 barcoded columns. Parameters with no data (e.g. the charge of a loop with length zero) are marked with 1E-100 to distinguish from true zero values (e.g. the charge of a neutral loop). These 1E-100 values are ignored when generating the subsequent charts.
