@@ -487,7 +487,7 @@ def reconstructSequence(sid, seq, positions, barcodes, residueSeparator):
 def usage(longMsg=False):
     print("usage: %s -b POS1[:BARCODE1] [-b POS2[:BARCODE2] [-b ...]] [-B BARCODE.txt]" % sys.argv[0])
     print("                [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] > OUTPUT.fa")
-    print("       %s -r -b [POS1]:BARCODE1 [-b [POS2]:BARCODE2 [-b ...]] [-B BARCODE.txt]" % sys.argv[0])
+    print("       %s -r [-b [POS1]:BARCODE1] [-b [POS2]:BARCODE2 [-b ...]] [-B BARCODE.txt]" % sys.argv[0])
     print("                [-s OUTPUT.csv] [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] > OUTPUT.fa")
     print("       %s -h | --help" % sys.argv[0])
     if longMsg is True:
@@ -496,12 +496,12 @@ def usage(longMsg=False):
         print(" -r                Operate in reconstruction mode (i.e. restoring residues)")
         print(" -b POS[:BARCODE]  Specify the POSition to replace with BARCODE")
         print("    POS            Residue index (1-based number) to replace in each sequence")
-        print("    BARCODE        Barcode to use at this position.  Uses built-in (or see -B option)")
+        print("    BARCODE        Custom barcode to use at this position.  Uses built-in (or see -B option)")
         print(" -B BARCODE.txt    Use file named BARCODE.txt to source barcodes from, one per line")
         print(" -s OUTPUT.csv     Produce (and store) summary statistics file named OUTPUT.csv")
-        print(" -S SEPARATOR      String to enclose replaced residues when placed in FastA ID (Default: '__BC__')")
-        print(" INPUT.fa          Input fasta sequences. '-' to read from standard input (Default)")
-        print(" > OUTPUT.fa       Output fasta sequences are written to standard output.  Redirect to OUTPUT.fa")
+        print(" -S SEPARATOR      String to enclose replaced residues in FastA ID (Default: '__BC__')")
+        print(" INPUT.fa          Input FastA file. (default: standard input)")
+        print(" > OUTPUT.fa       Output FastA file. (default: standard output)")
     # end if long
     
     print("")
