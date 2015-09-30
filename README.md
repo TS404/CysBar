@@ -9,12 +9,13 @@ Readme for running cysbar.py locally
 
 Usage
 -----
+
 ```
 Barcoding function:
 cysbar.py -b POS1[:BARCODE1] [-b POS2[:BARCODE2] [-b ...]] [-B BARCODE.txt] [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] >OUTPUT.fa
 
 Reconstructing function:
-cysbar.py -r -b POS1:[BARCODE1] [-b POS2:[BARCODE2] [-b ...]] [-B BARCODE.txt] [-s OUTPUT.csv] [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] >OUTPUT.fa
+cysbar.py -r -b [POS1:][BARCODE1] [-b [POS2:][BARCODE2] [-b ...]] [-B BARCODE.txt] [-s OUTPUT.csv] [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] >OUTPUT.fa
 
 Arguments:
 -h, --help        Print this help information
@@ -33,7 +34,7 @@ Manual
 
 ### 1 Readme introduction
 
-This readme describes in detail how to use the python script `cysbar.py` locally and how to use the data analysing excel spreadsheet `loopproperties.xlsx`. For simple online use of the scripts, a webtool is available at: [cysbar.science.latrobe.edu.au](http://cysbar.science.latrobe.edu.au).
+This readme describes in detail how to use the python script `cysbar.py` locally and how to use the data analysing excel spreadsheet `loopproperties.xlsx`. For simple online use of the scripts a webtool is available at [cysbar.science.latrobe.edu.au](http://cysbar.science.latrobe.edu.au).
 
 
 ### 2 Python
