@@ -1,0 +1,35 @@
+## INSTALL Instructions ##
+# DEST = the path to the root of the apache webserver
+# HTTPD_USER = the username that apache runs under
+
+cp tshafee.tgz DEST
+cd DEST
+tar xf tshafee.tgz
+rm tshafee.tgz
+
+chmod a=rX,u=rwX -R *
+chmod 755 bin/*.sh
+chmod 700 results/
+chown HTTPD_USER: results
+
+# add the following crontab entry under the HTTPD_USER (so it can delete the old result files)
+# you will need to update the path to suit installation environment
+crontab -u HTTPD_USER -e
+# ---
+# remove all old result files each morning at 8:33 am
+8 33 * * * DEST/bin/cleanup.sh
+# ---
+
+# update paths in config.php
+vim config.php
+# alter the paths as required
+#:wq
+
+## check config
+# open the check_config.php file via your web browser.
+# it should have "Config OK: YES" at the end if everything is set up correctly.
+
+## Optional: monitoring application
+# you can configure your monitoring application to check the status of the website by
+# searching for the string "<!-- Config OK: YES -->" in the output of check_config.php
+

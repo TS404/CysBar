@@ -1,7 +1,7 @@
-results
+webapp/results/*
+webapp/img/*
 .svn
 .git
 .settings
-.htaccess
 .project
 .pydevproject

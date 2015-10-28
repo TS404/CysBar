@@ -1,0 +1,33 @@
+/* common */
+h1 {font-style: italic;}
+p.footer {font-style: italic; font-size: .8em; color: grey; clear:both;}
+hr.rule {border-width: 0 0 1px 0; border-color: gray; clear: both;}
+div.headertext {font-style: italic; color: gray; padding: 10px 0;}
+div.submittext {font-style: italic; color: gray; padding: 10px 0;}
+div.links ul {list-style: none; display: inline;}
+div.links li {display: inline;}
+div.errormsg {color: #DD6622; margin: 10px 0;}
+div.footerimgs {clear: both;}
+div.leftimg {float: left;}
+div.rightimg {float: right;}
+
+/* index */
+div.linksect {max-width: 190px; float: left;}
+div.descsect {margin-left: 200px;}
+div.linkgroup {clear: both; padding: 10px;}
+
+/* barcoder */
+td.c  input {max-width: 35px;}
+td.bc input {font-family: Monospace; max-width: 150px;}
+
+div.seq label {font-weight: bold; display: block; margin-top: 10px;}
+div.seq textarea {width: 500px; height: 150px;}
+th.headingcol {width: 150px;}
+th.heading {text-align: left;}
+textarea.results {width: 95%; min-height: 150px;}
+table.results {width: 100%;}
+
+/* reconstructer */
+div.jobid label {font-weight: bold; display: block; margin-top: 10px;}
+
+
