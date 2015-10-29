@@ -15,17 +15,17 @@ if ($jobid == "" || !is_dir("$RESULT_DIR/$jobid") || !is_file("$RESULT_DIR/$jobi
 }
 
 // load job details from file
-$params = array_map("trim", file("$RESULT_DIR/$jobid/$PARAM_FILE"));
-$c = array_slice($params, 0, 8);
-$bc = array_slice($params, 8, 8);
-
-if (count($c) != 8 || count($bc) != 8)
-{
-    $_SESSION['msg'] = "Failed to find your job details.  Please try again and if that fails contact the system admin.";
-
-    header("location: reconstructer_jobid.php");
-    exit();
-}
+// $params = array_map("trim", file("$RESULT_DIR/$jobid/$PARAM_FILE"));
+// $c = array_slice($params, 0, 8);
+// $bc = array_slice($params, 8, 8);
+// 
+// if (count($c) != 8 || count($bc) != 8)
+// {
+    // $_SESSION['msg'] = "Failed to find your job details.  Please try again and if that fails contact the system admin.";
+// 
+    // header("location: reconstructer_jobid.php");
+    // exit();
+// }
 
 // sanitise input parameters
 $seq = san_seq($_POST['seq']);
@@ -46,7 +46,7 @@ if (strlen($seq) > $MAX_SEQ_SIZE) {
 }
 
 // check config
-if (!is_executable("$BIN_DIR/Reconstructer.sh")) {
+if (!is_executable("$BIN_DIR/cysbar")) {
 	$_SESSION['msg'] = "Server configuration error, please contact the system administrator (error num: 2)";
     saveVars($_SESSION, $c, $bc, $seq);
     header("location: reconstructer.php?j=$jobid");
@@ -61,7 +61,7 @@ fclose($seqfile);
 
 // run the script
 $bc = array_map("escapeshellarg", $bc);
-$cmd="$BIN_DIR/Reconstructer.sh {$bc[0]} {$bc[1]} {$bc[2]} {$bc[3]} {$bc[4]} {$bc[5]} {$bc[6]} {$bc[7]}";
+$cmd="$BIN_DIR/cysbar -r {$BARCODE_FILE} >recon.fa 2>recon-errors.log";
 $output="";
 $rc=-1;
 exec($cmd, $output, $rc);

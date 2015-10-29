@@ -16,8 +16,11 @@ $RESULT_DIR="$BASEDIR/results";
 # source sequence filename (as expected by barcoder.sh)
 $SRC_SEQ_FILE="source.fa";
 
-# the file the c and barcode values are writen to (in each result directory)
-$PARAM_FILE="params.txt";
+# the file the barcode values are writen to (in each result directory)
+$BARCODE_FILE="barcodes.txt";
+
+# the filename to write barcoded sequences to (in each result directory)
+$BARCODE_OUTPUTFILE="barcoded.fa";
 
 # aligned sequences filename (as expected by reconstructer.sh)
 $ALIGN_SEQ_FILE="align.fa";

@@ -50,8 +50,8 @@ if (strlen($seq) > $MAX_SEQ_SIZE) {
 }
 
 for ($i = 0; $i < 8; $i++) {
-    if (strlen($bc[$i]) != 12 && $c[$i] != "0") {
-        $_SESSION['msg'] = "Barcodes must be 12 amino acids in length";
+    if (strlen($bc[$i]) < 1 && $c[$i] != "0") {
+        $_SESSION['msg'] = "Please enter a barcode for each residue to replace";
         saveVars($_SESSION, $c, $bc, $seq);
         header("location: barcoder.php");
         exit();
@@ -59,7 +59,7 @@ for ($i = 0; $i < 8; $i++) {
 }
 
 // check config
-if (!is_executable("$BIN_DIR/Barcoder.sh")) {
+if (!is_executable("$BIN_DIR/cysbar")) {
 	$_SESSION['msg'] = "Server configuration error, please contact the system administrator (error num: 1)";
         saveVars($_SESSION, $c, $bc, $seq);
     header("location: barcoder.php");
@@ -97,15 +97,15 @@ fwrite($seqfile, $seq);
 fclose($seqfile);
 
 // write parameters (for later reconstruction)
-$paramfile = fopen($PARAM_FILE, "w");
-fwrite($paramfile, "{$c[0]}\n");
-fwrite($paramfile, "{$c[1]}\n");
-fwrite($paramfile, "{$c[2]}\n");
-fwrite($paramfile, "{$c[3]}\n");
-fwrite($paramfile, "{$c[4]}\n");
-fwrite($paramfile, "{$c[5]}\n");
-fwrite($paramfile, "{$c[6]}\n");
-fwrite($paramfile, "{$c[7]}\n");
+$paramfile = fopen($BARCODE_FILE, "w");
+// fwrite($paramfile, "{$c[0]}\n");
+// fwrite($paramfile, "{$c[1]}\n");
+// fwrite($paramfile, "{$c[2]}\n");
+// fwrite($paramfile, "{$c[3]}\n");
+// fwrite($paramfile, "{$c[4]}\n");
+// fwrite($paramfile, "{$c[5]}\n");
+// fwrite($paramfile, "{$c[6]}\n");
+// fwrite($paramfile, "{$c[7]}\n");
 fwrite($paramfile, "{$bc[0]}\n");
 fwrite($paramfile, "{$bc[1]}\n");
 fwrite($paramfile, "{$bc[2]}\n");
@@ -116,11 +116,22 @@ fwrite($paramfile, "{$bc[6]}\n");
 fwrite($paramfile, "{$bc[7]}\n");
 fclose($paramfile);
 
+	
+
 // run the script
 $c = array_map("escapeshellarg", $c);
-$bc = array_map("escapeshellarg", $bc);
+
+// format positions
+$pos = "";
+for ($i = 0; $i < 8; $i++) {
+	if ($c[$i] != "0") {
+		$pos .= " -b {$c[$i]}";
+	}
+}
+
 // Redirect errors to /dev/null - code requires that awk error on null values, doesn't populate 'columns' files, and reconstructions works.  Bad!  No Donut!
-$cmd="$BIN_DIR/Barcoder.sh {$c[0]} {$c[1]} {$c[2]} {$c[3]} {$c[4]} {$c[5]} {$c[6]} {$c[7]} {$bc[0]} {$bc[1]} {$bc[2]} {$bc[3]} {$bc[4]} {$bc[5]} {$bc[6]} {$bc[7]} 2>/dev/null";
+// $cmd="$BIN_DIR/cysbar {$c[0]} {$c[1]} {$c[2]} {$c[3]} {$c[4]} {$c[5]} {$c[6]} {$c[7]} {$bc[0]} {$bc[1]} {$bc[2]} {$bc[3]} {$bc[4]} {$bc[5]} {$bc[6]} {$bc[7]} 2>/dev/null";
+$cmd="$BIN_DIR/cysbar -B {$BARCODE_FILE} {$pos} >{$BARCODE_OUTPUTFILE} 2>/dev/null";
 //$cmd="ls -la";
 $output="";
 $rc=-1;
