@@ -60,7 +60,7 @@ for ($i = 0; $i < 8; $i++) {
 
 // check config
 if (!is_executable("$BIN_DIR/cysbar")) {
-	$_SESSION['msg'] = "Server configuration error, please contact the system administrator (error num: 1)";
+	$_SESSION['msg'] = "Server configuration error, please contact the system administrator (1)";
         saveVars($_SESSION, $c, $bc, $seq);
     header("location: barcoder.php");
 	exit();
@@ -75,7 +75,7 @@ do {
     $i++;
 } while(file_exists("$RESULT_DIR/$jobid") && $i < 100);
 if ($i >= 100) {
-    $_SESSION['msg'] = "Failed to generate your barcoded files.  Please try again and if that fails contact the system admin.";
+    $_SESSION['msg'] = "Failed to generate your barcoded files.  Please try again and if that fails contact the system admin. (2)";
     saveVars($_SESSION, $c, $bc, $seq);
     header("location: barcoder.php");
     exit();
@@ -83,7 +83,7 @@ if ($i >= 100) {
 
 // make the directory
 if (!mkdir("$RESULT_DIR/$jobid", 0755, true)) {
-    $_SESSION['msg'] = "Failed to generate your barcoded files.  Please try again and if that fails contact the system admin.";
+    $_SESSION['msg'] = "Failed to generate your barcoded files.  Please try again and if that fails contact the system admin. (3)";
         saveVars($_SESSION, $c, $bc, $seq);
     header("location: barcoder.php");
     exit();
@@ -92,20 +92,20 @@ if (!mkdir("$RESULT_DIR/$jobid", 0755, true)) {
 // write the input files
 //echo getcwd();
 chdir("$RESULT_DIR/$jobid");
-$seqfile = fopen($SRC_SEQ_FILE, "w");
+$seqfile = fopen($BARCODE_INPUTFILE, "w");
 fwrite($seqfile, $seq);
 fclose($seqfile);
 
-// write parameters (for later reconstruction)
-$paramfile = fopen($BARCODE_FILE, "w");
-// fwrite($paramfile, "{$c[0]}\n");
-// fwrite($paramfile, "{$c[1]}\n");
-// fwrite($paramfile, "{$c[2]}\n");
-// fwrite($paramfile, "{$c[3]}\n");
-// fwrite($paramfile, "{$c[4]}\n");
-// fwrite($paramfile, "{$c[5]}\n");
-// fwrite($paramfile, "{$c[6]}\n");
-// fwrite($paramfile, "{$c[7]}\n");
+// write settings for display
+$paramfile = fopen($PARAM_FILE, "w");
+fwrite($paramfile, "{$c[0]}\n");
+fwrite($paramfile, "{$c[1]}\n");
+fwrite($paramfile, "{$c[2]}\n");
+fwrite($paramfile, "{$c[3]}\n");
+fwrite($paramfile, "{$c[4]}\n");
+fwrite($paramfile, "{$c[5]}\n");
+fwrite($paramfile, "{$c[6]}\n");
+fwrite($paramfile, "{$c[7]}\n");
 fwrite($paramfile, "{$bc[0]}\n");
 fwrite($paramfile, "{$bc[1]}\n");
 fwrite($paramfile, "{$bc[2]}\n");
@@ -116,22 +116,30 @@ fwrite($paramfile, "{$bc[6]}\n");
 fwrite($paramfile, "{$bc[7]}\n");
 fclose($paramfile);
 
-	
+
+// write barcodes (for later reconstruction)
+$paramfile = fopen($BARCODE_FILE, "w");
+for ($i = 0; $i < 8; $i++) {
+	if ($bc[$i] != "")
+		fwrite($paramfile, "{$bc[$i]}\n");
+}
+fclose($paramfile);
+
 
 // run the script
-$c = array_map("escapeshellarg", $c);
+//$c = array_map("escapeshellarg", $c);
 
 // format positions
 $pos = "";
 for ($i = 0; $i < 8; $i++) {
-	if ($c[$i] != "0") {
+	if ($c[$i] != "0" && $c[$i] !== 0) {
 		$pos .= " -b {$c[$i]}";
 	}
 }
 
 // Redirect errors to /dev/null - code requires that awk error on null values, doesn't populate 'columns' files, and reconstructions works.  Bad!  No Donut!
 // $cmd="$BIN_DIR/cysbar {$c[0]} {$c[1]} {$c[2]} {$c[3]} {$c[4]} {$c[5]} {$c[6]} {$c[7]} {$bc[0]} {$bc[1]} {$bc[2]} {$bc[3]} {$bc[4]} {$bc[5]} {$bc[6]} {$bc[7]} 2>/dev/null";
-$cmd="$BIN_DIR/cysbar -B {$BARCODE_FILE} {$pos} >{$BARCODE_OUTPUTFILE} 2>/dev/null";
+$cmd="$BIN_DIR/cysbar -B {$BARCODE_FILE} {$pos} {$BARCODE_INPUTFILE} >{$BARCODE_OUTPUTFILE} 2>barcode-errors.log";
 //$cmd="ls -la";
 $output="";
 $rc=-1;

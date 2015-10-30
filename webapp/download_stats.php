@@ -5,7 +5,7 @@ include_once("support.php");
 
 $jobid=san_jobid($_GET['j']);
 
-$file="$RESULT_DIR/$jobid/Loop_statistics.csv";
+$file="$RESULT_DIR/$jobid/$RECON_STATSFILE";
 
 if ($jobid == "" || !is_dir("$RESULT_DIR/$jobid") || !is_file($file))
 {

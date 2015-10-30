@@ -121,7 +121,7 @@ if (count($c) != 8 || count($bc) != 8)
 		        <td><a href="download_barcoded.php?j=<?php echo $jobid; ?>">Download [FastA]</a></td>
 		    </tr>
 		    <tr>
-		        <td colspan="2"><textarea class="results" readonly="readonly"><?php if (is_readable("$RESULT_DIR/$jobid/BARCODED_source.fa")) { readfile("$RESULT_DIR/$jobid/BARCODED_source.fa"); }
+		        <td colspan="2"><textarea class="results" readonly="readonly"><?php if (is_readable("$RESULT_DIR/$jobid/$BARCODE_OUTPUTFILE")) { readfile("$RESULT_DIR/$jobid/$BARCODE_OUTPUTFILE"); }
 else { print "No results found, please contact the system administrator"; } ?></textarea></td>
 		    </tr>
 		</tbody>

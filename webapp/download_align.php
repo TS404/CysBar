@@ -5,7 +5,7 @@ include_once("support.php");
 
 $jobid=san_jobid($_GET['j']);
 
-$file="$RESULT_DIR/$jobid/FINAL_ALIGNMENT.fa";
+$file="$RESULT_DIR/$jobid/$RECON_OUTPUTFILE";
 
 if ($jobid == "" || !is_dir("$RESULT_DIR/$jobid") || !is_file($file))
 {

@@ -6,7 +6,7 @@ include_once("support.php");
 
 $jobid=san_jobid($_POST['j']);
 
-if ($jobid == "" || !is_dir("$RESULT_DIR/$jobid") || !is_file("$RESULT_DIR/$jobid/$PARAM_FILE"))
+if ($jobid == "" || !is_dir("$RESULT_DIR/$jobid") || !is_file("$RESULT_DIR/$jobid/$BARCODE_FILE"))
 {
     $_SESSION['msg'] = "Failed to find your job details.  Please try again and if that fails contact the system admin.";
 
@@ -15,11 +15,9 @@ if ($jobid == "" || !is_dir("$RESULT_DIR/$jobid") || !is_file("$RESULT_DIR/$jobi
 }
 
 // load job details from file
-// $params = array_map("trim", file("$RESULT_DIR/$jobid/$PARAM_FILE"));
-// $c = array_slice($params, 0, 8);
-// $bc = array_slice($params, 8, 8);
+// $bc = array_map("trim", file("$RESULT_DIR/$jobid/$BARCODE_FILE"));
 // 
-// if (count($c) != 8 || count($bc) != 8)
+// if (count($bc) == 0)
 // {
     // $_SESSION['msg'] = "Failed to find your job details.  Please try again and if that fails contact the system admin.";
 // 
@@ -55,13 +53,13 @@ if (!is_executable("$BIN_DIR/cysbar")) {
 
 // write the input files
 chdir("$RESULT_DIR/$jobid");
-$seqfile = fopen($ALIGN_SEQ_FILE, "w");
+$seqfile = fopen($RECON_INPUTFILE, "w");
 fwrite($seqfile, $seq);
 fclose($seqfile);
 
 // run the script
 $bc = array_map("escapeshellarg", $bc);
-$cmd="$BIN_DIR/cysbar -r {$BARCODE_FILE} >recon.fa 2>recon-errors.log";
+$cmd="$BIN_DIR/cysbar -r -B {$BARCODE_FILE} -s {$RECON_STATSFILE} {$RECON_INPUTFILE} >{$RECON_OUTPUTFILE} 2>recon-errors.log";
 $output="";
 $rc=-1;
 exec($cmd, $output, $rc);

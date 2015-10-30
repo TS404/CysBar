@@ -50,7 +50,7 @@ if ($jobid == "" || !is_dir("$RESULT_DIR/$jobid") || !is_file("$RESULT_DIR/$jobi
 		        <td><a href="download_align.php?j=<?php echo $jobid; ?>">Download [FastA]</a></td>
 		    </tr>
 		    <tr>
-		        <td colspan="2"><textarea class="results" readonly="readonly"><?php if (is_readable("$RESULT_DIR/$jobid/FINAL_ALIGNMENT.fa")) { readfile("$RESULT_DIR/$jobid/FINAL_ALIGNMENT.fa"); }
+		        <td colspan="2"><textarea class="results" readonly="readonly"><?php if (is_readable("$RESULT_DIR/$jobid/$RECON_OUTPUTFILE")) { readfile("$RESULT_DIR/$jobid/$RECON_OUTPUTFILE"); }
 else { print "No results found, please contact the system administrator"; } ?></textarea></td>
 		    </tr>
 		    <tr>
@@ -58,7 +58,7 @@ else { print "No results found, please contact the system administrator"; } ?></
 		        <td><a href="download_stats.php?j=<?php echo $jobid; ?>">Download [CSV]</a></td>
 		    </tr>
 		    <tr>
-		        <td colspan="2"><textarea class="results" readonly="readonly"><?php if (is_readable("$RESULT_DIR/$jobid/Loop_statistics.csv")) { readfile("$RESULT_DIR/$jobid/Loop_statistics.csv"); }
+		        <td colspan="2"><textarea class="results" readonly="readonly"><?php if (is_readable("$RESULT_DIR/$jobid/$RECON_STATSFILE")) { readfile("$RESULT_DIR/$jobid/$RECON_STATSFILE"); }
 else { print "No results found, please contact the system administrator"; } ?></textarea></td>
 		    </tr>
 		</tbody>
