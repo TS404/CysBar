@@ -29,7 +29,7 @@ include_once("config.php");
 	<hr class="rule"/>
 
 	<div class="linkgroup">
-		<div class="linksect"><a href="https://github.com/TS404/Barcoder">Script Downloads</a></div>
+		<div class="linksect"><a href="https://github.com/TS404/CysBar">Script Downloads</a></div>
 		<div class="descsect">You can download the scripts used on this website from our GitHub repository</div>
 	</div>
 
