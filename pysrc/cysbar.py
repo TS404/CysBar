@@ -6,6 +6,7 @@ import getopt, sys
 # barcoder [-r] -b 3[:ADSFDSAGAFDSKG] -b 1[:DSAGHGTFG] [-B BARCODE.txt] [INPUT.fa] [-s OUT.csv] > OUT.fa
 
 __VERSION__="0.1.0"
+MATCHSIM = 0.85
 
 BUILT_IN_BARCODES=[
     "wwyhwyyhmm",
@@ -62,9 +63,9 @@ def main(argv):
         opts, args = getopt.getopt(sys.argv[1:], "hrb:B:s:S:")
     except getopt.GetoptError as err:
         # print help information and exit:
-        print str(err)
-        usage()
-        sys.exit(2)
+        sys.strerr.write("%s\n" %str(err))
+        usage(outstream=sys.stderr)
+        return 2
     
     # argument defaults
     inputFilenames = ["-"]
@@ -99,8 +100,8 @@ def main(argv):
         elif o in ("-S"):
             residueSeparator = a
         else:
-            print("Unknown option: %s" % o)
-            usage()
+            sys.stderr.write("Unknown option: %s\n" % o)
+            usage(outstream=sys.stderr)
             return 1
     # next argument
     
@@ -108,8 +109,8 @@ def main(argv):
     if barcodeMode:
         for pos in positions:
             if pos < 1:
-                print("Error: Positions need to be greater than 0 (found: %s)" % pos)
-                usage()
+                sys.stderr.write("Error: Positions need to be greater than 0 (found: %s)\n" % pos)
+                usage(outstream=sys.stderr)
                 return 2
     else:
         pass
@@ -149,7 +150,7 @@ def barcode(inputFile, positions, barcodes, barcodeFilename, residueSeparator):
     
     # check enough barcodes are present
     if len(barcodes) < len(positions):
-        print("Error: not enough barcodes were provided (or built in).  Please provide more")
+        sys.stderr.write("Error: not enough barcodes were provided (or built in).  Please provide more\n")
         return 1
     
     # get input file handle
@@ -159,16 +160,73 @@ def barcode(inputFile, positions, barcodes, barcodeFilename, residueSeparator):
         rc = barcodeFile(sys.stdin, positions, barcodes, residueSeparator)
     else:
         with open(inputFile) as iFile:
+            
+            # check for barcodes matching input sequences
+            bcmatch = False
+            for bc in barcodes:
+                #for
+                pass
+            
+            iFile.seek(0)
+            
             rc = barcodeFile(iFile, positions, barcodes, residueSeparator)
     
     return rc
 # end barcode()
+
 
 def barcodeFile(iFile, positions, barcodes, residueSeparator):
     '''Barcodes each sequence in the given file-like object'''
     
     sid = None
     seq = ""
+    
+    # check if we can seek (and cache if not)
+    try:
+        iFile.seek(0)
+    except IOError:
+        # cache input since its stdin and can't be seeked
+        iFile = list(iFile)
+    
+    # check if barcodes match sequence
+    bcMatch = False
+    
+    for bc in barcodes:
+        bc = bc.lower()
+        for line in iFile:
+            line = line.rstrip()
+            if line.startswith(">"):
+                # complete last sequence
+                if sid is not None:
+                    if isMatched(seq.lower(), bc, MATCHSIM):
+                        bcMatch = True
+                        sys.stderr.write("ERROR: %s matches barcode '%s'\n" %(sid, bc))
+                    
+                    seq = ""
+                elif seq != "":
+                    sys.stderr.write("Error: input file doesn't appear to be a FastA formatted file\n")
+                    return 1
+                
+                sid = line
+            else:
+                seq += line
+            # endif
+        # next line
+        # complete final sequence
+        if seq is not None:
+            if isMatched(seq, bc, MATCHSIM):
+                bcMatch = True
+                sys.stderr.write("ERROR: %s matches barcode '%s'\n" %(sid, bc))
+    # next barcode
+    if bcMatch:
+        return 2
+    
+    # reset file to start
+    try:
+        iFile.seek(0)
+    except AttributeError: # list has no seek
+        pass
+    
     for line in iFile:
         line = line.rstrip()
         if line.startswith(">"):
@@ -180,7 +238,7 @@ def barcodeFile(iFile, positions, barcodes, residueSeparator):
                 
                 seq = ""
             elif seq != "":
-                print("Error: input file doesn't appear to be a FastA formatted file")
+                sys.stderr.write("Error: input file doesn't appear to be a FastA formatted file\n")
                 return 1
             
             sid = line
@@ -194,7 +252,8 @@ def barcodeFile(iFile, positions, barcodes, residueSeparator):
         bcseq, residues = barcodeSequence(seq, positions, barcodes)
         print sid + residueSeparator + "".join(residues) + residueSeparator
         print bcseq
-    
+        
+    return 0
 # end barcodeFile()
 
 def barcodeSequence(seq, positions, barcodes):
@@ -278,7 +337,7 @@ def reconstruct(inputFilenames, positions, barcodes, barcodeFilename, statsFilen
         if line is None:
             return 0
         if len(line) > 0 and line[0] != ">":
-            print("Error: input file doesn't appear to be a FastA formatted file")
+            sys.stderr.write("Error: input file doesn't appear to be a FastA formatted file\n")
             return 1
         parts = line.split(residueSeparator, 2)
         if len(parts) > 1:
@@ -320,7 +379,7 @@ def reconstruct(inputFilenames, positions, barcodes, barcodeFilename, statsFilen
     
     # check enough barcodes are present
     if len(barcodes) < len(positions):
-        print("Error: not enough barcodes were provided (or built in).  Please provide more")
+        sys.stderr.write("Error: not enough barcodes were provided (or built in).  Please provide more\n")
         return 2
 
     # process the files
@@ -359,7 +418,7 @@ def reconstructFile(iFile, positions, barcodes, residueSeparator, statsFile=None
                 if statsFile is not None:
                     statsFile.write("%s,%s\n" % (seqid, ",".join(stats)))
             elif seq != "":
-                print("Error: input file doesn't appear to be a FastA formatted file")
+                sys.stderr.write("Error: input file doesn't appear to be a FastA formatted file\n")
                 return 1
             
             sid = line
@@ -377,7 +436,7 @@ def reconstructFile(iFile, positions, barcodes, residueSeparator, statsFile=None
         if statsFile is not None:
             statsFile.write("%s,%s\n" % (seqid, ",".join(stats)))
     elif seq != "":
-        print("Error: input file doesn't appear to be a FastA formatted file")
+        sys.stderr.write("Error: input file doesn't appear to be a FastA formatted file\n")
         return 1
 
 # end reconstructFile()
@@ -484,30 +543,116 @@ def reconstructSequence(sid, seq, positions, barcodes, residueSeparator):
 # end reconstructSequence()
 
 
-def usage(longMsg=False):
-    print("usage: %s -b POS1[:BARCODE1] [-b POS2[:BARCODE2] [-b ...]] [-B BARCODE.txt]" % sys.argv[0])
-    print("                [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] > OUTPUT.fa")
-    print("       %s -r [-b [POS1]:BARCODE1] [-b [POS2]:BARCODE2 [-b ...]] [-B BARCODE.txt]" % sys.argv[0])
-    print("                [-s OUTPUT.csv] [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] > OUTPUT.fa")
-    print("       %s -h | --help" % sys.argv[0])
+def usage(longMsg=False, outstream=sys.stdout):
+    outstream.write("usage: %s -b POS1[:BARCODE1] [-b POS2[:BARCODE2] [-b ...]] [-B BARCODE.txt]\n" % sys.argv[0])
+    outstream.write("                [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] > OUTPUT.fa\n")
+    outstream.write("       %s -r [-b [POS1]:BARCODE1] [-b [POS2]:BARCODE2 [-b ...]] [-B BARCODE.txt]\n" % sys.argv[0])
+    outstream.write("                [-s OUTPUT.csv] [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] > OUTPUT.fa\n")
+    outstream.write("       %s -h | --help\n" % sys.argv[0])
     if longMsg is True:
-        print("")
-        print(" -h, --help        Print this help information")
-        print(" -r                Operate in reconstruction mode (i.e. restoring residues)")
-        print(" -b POS[:BARCODE]  Specify the POSition to replace with BARCODE")
-        print("    POS            Residue index (1-based number) to replace in each sequence")
-        print("    BARCODE        Custom barcode to use at this position.  Uses built-in (or see -B option)")
-        print(" -B BARCODE.txt    Use file named BARCODE.txt to source barcodes from, one per line")
-        print(" -s OUTPUT.csv     Produce (and store) summary statistics file named OUTPUT.csv")
-        print(" -S SEPARATOR      String to enclose replaced residues in FastA ID (Default: '__BC__')")
-        print(" INPUT.fa          Input FastA file. (default: standard input)")
-        print(" > OUTPUT.fa       Output FastA file. (default: standard output)")
+        outstream.write("\n")
+        outstream.write(" -h, --help        Print this help information\n")
+        outstream.write(" -r                Operate in reconstruction mode (i.e. restoring residues)\n")
+        outstream.write(" -b POS[:BARCODE]  Specify the POSition to replace with BARCODE\n")
+        outstream.write("    POS            Residue index (1-based number) to replace in each sequence\n")
+        outstream.write("    BARCODE        Custom barcode to use at this position.  Uses built-in (or see -B option)\n")
+        outstream.write(" -B BARCODE.txt    Use file named BARCODE.txt to source barcodes from, one per line\n")
+        outstream.write(" -s OUTPUT.csv     Produce (and store) summary statistics file named OUTPUT.csv\n")
+        outstream.write(" -S SEPARATOR      String to enclose replaced residues in FastA ID (Default: '__BC__')\n")
+        outstream.write(" INPUT.fa          Input FastA file. (default: standard input)\n")
+        outstream.write(" > OUTPUT.fa       Output FastA file. (default: standard output)\n")
     # end if long
     
-    print("")
-    print(" Version: %s" % __VERSION__)
+    outstream.write("\n")
+    outstream.write(" Version: %s\n" % __VERSION__)
 # end usage()
 
+
+#### SUPPORT ####
+
+class BarcodeMatch(Exception):
+    pass
+ 
+_CACHE={}
+
+def isMatched(seq, bc, matchSim = 0.85):
+    '''Checks if barcode is in seq significantly'''
+    
+    
+    seqlen = len(seq)
+    bclen = len(bc)
+    _CACHE.clear()
+    
+    OVERLAP = int(min(seqlen, bclen) * matchSim)
+    
+    
+    try:
+        # match with barcode at start
+        for pen in range(OVERLAP-bclen,0):
+#             print "Trying: %s %s %s" % (0, -pen, pen)
+#             print "Score: %s" % 
+            goodAlign(seq, bc, 0, -pen, pen, OVERLAP)[0]
+            
+        
+        # match with equal start, seq start or barcode past end
+        for seqpos in range(seqlen):
+#             print "Trying: %s %s %s" % (seqpos, 0,0)
+#             print "Score: %s" % 
+            goodAlign(seq, bc, seqpos, 0, OVERLAP)[0]
+        
+    except BarcodeMatch:
+        return True
+    return False
+# end isMatched
+    
+
+def goodAlign(seq, bc, seqpos, bcpos, pen=0, OVERLAP = 8):
+    if (seqpos,bcpos) in _CACHE:
+        return _CACHE[(seqpos,bcpos)]
+    
+    # check if this residue aligns
+    score = 0
+    try:
+        if seq[seqpos] == bc[bcpos]:
+            score = 1
+    except IndexError:
+        _CACHE[(seqpos,bcpos)] = (0, "", "", "")
+#         print "[%s, %s]: %s" % (seqpos, bcpos, 0)
+        return (0, "", "", "")
+    
+    # compute rest of alignment
+    m1 = goodAlign(seq, bc, seqpos+1, bcpos+1, OVERLAP)  # match (or mismatch)
+    m2 = goodAlign(seq, bc, seqpos, bcpos+1, OVERLAP)    # barcode insertion
+    m3 = goodAlign(seq, bc, seqpos+1, bcpos, OVERLAP)    # sequence insertion
+    
+    ms = max(m1[0]+score, m2[0], m3[0])
+    
+    if ms == m1[0]+score:
+        score = (m1[0]+score, seq[seqpos] + m1[1], "|" + m1[2], bc[bcpos] + m1[3])
+    elif ms == m2[0]:
+        score = (m2[0]+score, "-"+ m2[1], " " + m2[2], bc[bcpos] + m2[3])
+    else:
+        score = (m3[0]+score, seq[seqpos] + m3[1], " " + m3[2], "-" + m3[3])
+ 
+    # cache the score
+    _CACHE[(seqpos,bcpos)] = score
+    
+#     print "[%s, %s]: %s" % (seqpos, bcpos, score)
+    
+    if score[0] >= OVERLAP:
+#         print score[1]
+#         print score[2]
+#         print score[3]
+        raise BarcodeMatch
+    
+    return score
+# end goodAlign
+
+
+
+
+
+#### main entry point ####
 
 if __name__=="__main__":
     if '-h' in sys.argv or '--help' in sys.argv or len(sys.argv) == 1:
