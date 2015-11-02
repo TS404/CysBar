@@ -10,7 +10,7 @@ Readme for running cysbar.py locally
 Usage
 -----
 
-```
+```in
 Barcoding function:
 cysbar.py -b POS1[:BARCODE1] [-b POS2[:BARCODE2] [-b ...]] [-B BARCODE.txt] [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] >OUTPUT.fa
 
@@ -39,9 +39,9 @@ This readme describes in detail how to use the python script `cysbar.py` locally
 
 ### 2 Python
 
-The script is in the python programming language and runs on linux, or mac machine. Windows users need to instal python. A short tutorial of the necessary basics to run pyton scripts is here:  
+The script is in the python programming language and runs on linux, or mac machine. Windows users need to install python. A short tutorial of the necessary basics to run pyton scripts is here:  
 [www.python.org](https://www.python.org/about/gettingstarted/)  
-The script is annotated and can be opened by any text editor to read and edit.  
+The script is annotated and can be opened by any text editor to read and edit.
 
 Both barcoding and reconstructing functions need the user to define some basic parameters (arguments). These are entered after `cysbar.py` with `-x` commands.
 
