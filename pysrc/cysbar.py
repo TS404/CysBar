@@ -5,7 +5,7 @@ import getopt, sys
 # barcoder -h
 # barcoder [-r] -b 3[:ADSFDSAGAFDSKG] -b 1[:DSAGHGTFG] [-B BARCODE.txt] [INPUT.fa] [-s OUT.csv] > OUT.fa
 
-__VERSION__="0.1.0"
+__VERSION__="0.1.1"
 MATCHSIM = 0.85
 
 BUILT_IN_BARCODES=[
@@ -19,7 +19,7 @@ BUILT_IN_BARCODES=[
     "myyhhmywyy",
     "hhyhwymmwy",
     "hymmywywhh",
-    
+
     "ywwmhmhyyh",
     "yhmymhwwhy",
     "wmmhhywhyw",
@@ -52,6 +52,73 @@ BUILT_IN_BARCODES=[
     "hhwhywhyhm",
     "whmmyyhyww",
     "wmhywhymyh",
+
+    "wmhymyhwyw",
+    "wywyhhmymm",
+    "hmmwwhyywy",
+    "hmywmywywh",
+    "hywymhywwm",
+    "hyywmhymhw",
+    "mmhmyywhwy",
+    "myyhwymwhh",
+    "mymywhhwym",
+    "yywhwmywhm",
+
+    "whwmwyyhmh",
+    "whwymmyhhw",
+    "whhmymwmyh",
+    "whmywmhmwy",
+    "wmywywmhmh",
+    "wmyhhmwhym",
+    "wyhhywmmhm",
+    "wyymwhhmhm",
+    "hmhyymmwhw",
+    "hmywwyhhmm",
+
+    "hywwhmwyhm",
+    "mwyyhmhhwm",
+    "mhwwyywhhm",
+    "mhhyyhwmmw",
+    "mmhwyhhyww",
+    "mhywwmyhwh",
+    "ywmhmmhwhy",
+    "yymmhhwwmw",
+    "ymwhmyhmhw",
+    "yyhmmwmhwh",
+
+    "wwhhmwmyyw",
+    "wwhhyhhmmy",
+    "wwyywwmmhh",
+    "whwwhwymmy",
+    "whwhmywymw",
+    "whhwyymyym",
+    "wwmmymhhym",
+    "hwwmwwmyyh",
+    "hhmhhmyyww",
+    "hhmmymmwwy",
+
+    "hhwyhmhwmy",
+    "hmhyywwyym",
+    "hmwywmmhym",
+    "hmhhwmhwyy",
+    "hmymhhwwyh",
+    "hywhmymwyy",
+    "mhwhywmwyw",
+    "mwwhyhyhmh",
+    "mhwmmhmywy",
+    "mywwhyhmyy",
+
+    "mymhwhymmw",
+    "ywmmhwyhmm",
+    "yhmhymwmwm",
+    "yywwmhhyym",
+    "wwhwmyhyhy",
+    "wwywhyyhhm",
+    "whhyhyymww",
+    "wwmhyywyhh",
+    "wmyhhyywwh",
+    "wyhyhmwywh",
+
 ]
 
 
