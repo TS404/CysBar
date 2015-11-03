@@ -65,9 +65,9 @@ INPUT.fa          Input fasta file (default = standard input)
 
 Example:
 ```
-cysbar.py -b 11 -b 22 -b 28 -b 32 -b 43 -b 50 -b 52 -b 56 example.fa >BARCODED_example.fa
+cysbar.py -b 11 -b 22 -b 28 -b 32 -b 43 -b 50 -b 52 -b 56 example1.fa >example1_barcoded.fa
 ```
-The above command will barcode the 11th, 29th... etc. columns of the `example.fa` alignment using the deafult barcode set, creating an output alignment called `BARCODED_example.fa`. The `BARCODED_example.fa` file can then be re-aligned by any standard alignment program (e.g. ClustalΩ, Probcons, Muscle).
+The above command will barcode the 11th, 29th... etc. columns of the `example1.fa` alignment using the deafult barcode set, creating an output alignment called `example1_barcoded.fa`. The `example1_barcoded.fa` file can then be re-aligned by any standard alignment program (e.g. ClustalΩ, Probcons, Muscle).
 
 *Notes*:  
 When several sub-group alignments need to be combined into a single alignment barcoded alignment, the individual sub-group alignments should be barcoded independently with `cysbar.py` (as in the example figures used in the manuscript).
@@ -93,9 +93,9 @@ INPUT.fa          Input fasta file (default = standard input)
 
 Example:
 ```
-cysbar.py -r -s stats.csv example2.fa >FINAL.fa
+cysbar.py -r -s example2_stats.csv example2.fa >example2_reconstructed.fa
 ```
-The above command will restore the original sequences of the `example2.fa` alignment, creating an output alignment called `FINAL.fa` and a summary of statistics called `stats.csv`.
+The above command will restore the original sequences of the `example2.fa` alignment, creating an output alignment called `example2_reconstructed.fa` and a summary of statistics called `example2_stats.csv`.
 
 *Notes*:  
 If the default barcodes was used, `-b` arguments are unnecessary since the script will search for the default barcode sequences. If custom barcode sequences were used, the same sequences must be definied in the `cysbar.py -r` command. For calculating loop properties, all cysteines are assumed to be oxidised (i.e. involved in disulphide bridges).
