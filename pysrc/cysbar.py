@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 
-import getopt, sys
+import getopt, sys, re
 
-# barcoder -h
-# barcoder [-r] -b 3[:ADSFDSAGAFDSKG] -b 1[:DSAGHGTFG] [-B BARCODE.txt] [INPUT.fa] [-s OUT.csv] > OUT.fa
-
-__VERSION__="0.1.1"
+__VERSION__="1.0.0"
 MATCHSIM = 0.85
 
 BUILT_IN_BARCODES=[
@@ -141,7 +138,6 @@ def main(argv):
     barcodes=[]
     barcodeFilename=None
     statsFilename=None
-#     residuesFilename=None
     residueSeparator="__BC__"
     
     # process arguments
@@ -160,8 +156,6 @@ def main(argv):
                 positions.append(0)
         elif o in ("-B"):
             barcodeFilename = a
-#         elif o in ("-R"):
-#             residuesFilename = a
         elif o in ("-s"):
             statsFilename = a
         elif o in ("-S"):
@@ -223,19 +217,9 @@ def barcode(inputFile, positions, barcodes, barcodeFilename, residueSeparator):
     # get input file handle
     rc = 0
     if inputFile == '-':
-        iFile = sys.stdin
         rc = barcodeFile(sys.stdin, positions, barcodes, residueSeparator)
     else:
         with open(inputFile) as iFile:
-            
-            # check for barcodes matching input sequences
-            bcmatch = False
-            for bc in barcodes:
-                #for
-                pass
-            
-            iFile.seek(0)
-            
             rc = barcodeFile(iFile, positions, barcodes, residueSeparator)
     
     return rc
@@ -348,7 +332,7 @@ class BufferedReader():
     
     def __init__(self, filename):
         self._filename = filename
-        self._iterable = None #obj.__iter__()
+        self._iterable = None
         self._isEnd = False
         self._buffer = None
     
@@ -516,7 +500,7 @@ def _fixSplit(s, bc, bcp):
 
 HYDROPATHY={
     "A": +1.8,
-    "C": +2.5,
+#     "C": +2.5,
     "D": -3.5,
     "E": -3.5,
     "F": +2.8,
@@ -551,9 +535,14 @@ def _calcStats(seq):
     hydropathy = 0.0
     charge = 0.0
     
+    # remove all non-letters
+    seq = re.sub(r'[^A-Z]', '', seq.upper())
+    hyLength = 0
+    
     for r in seq:
         try:
             hydropathy += HYDROPATHY[r.upper()]
+            hyLength += 1
         except KeyError:
             pass
         try:
@@ -562,7 +551,16 @@ def _calcStats(seq):
             pass
     # next residue
     
-    return (str(len(seq)), "%.1f" % hydropathy, "%.1f" % charge)
+    length = len(seq)
+    
+    if hyLength == 0:
+        hh = "1E-100"
+        cc = "1E-100"
+    else:
+        hh = "%.5f" % (hydropathy / hyLength)
+        cc = "%.1f" % charge
+    
+    return (str(length), hh, cc)
     
 
 def reconstructSequence(sid, seq, positions, barcodes, residueSeparator):
@@ -598,15 +596,21 @@ def reconstructSequence(sid, seq, positions, barcodes, residueSeparator):
     splits.sort()
     lsp = 0
     stats = []
-    stats.extend(_calcStats(seqOut))
+    statsC = _calcStats(seqOut)
+    fullSeq = ""
     for sp in splits:
+        fullSeq += seqOut[lsp:sp]
         stats.extend(_calcStats(seqOut[lsp:sp]))
         lsp = sp+1
     # next split 
+    fullSeq += seqOut[lsp:]
     stats.extend(_calcStats(seqOut[lsp:]))
+    statsNC = _calcStats(fullSeq)
     
+    outStats = [statsC[0], statsNC[1], statsC[2]]
+    outStats.extend(stats)
     
-    return (sidOut, seqOut, stats)
+    return (sidOut, seqOut, outStats)
 # end reconstructSequence()
 
 
@@ -656,15 +660,11 @@ def isMatched(seq, bc, matchSim = 0.85):
     try:
         # match with barcode at start
         for pen in range(OVERLAP-bclen,0):
-#             print "Trying: %s %s %s" % (0, -pen, pen)
-#             print "Score: %s" % 
             goodAlign(seq, bc, 0, -pen, pen, OVERLAP)[0]
             
         
         # match with equal start, seq start or barcode past end
         for seqpos in range(seqlen):
-#             print "Trying: %s %s %s" % (seqpos, 0,0)
-#             print "Score: %s" % 
             goodAlign(seq, bc, seqpos, 0, OVERLAP)[0]
         
     except BarcodeMatch:
@@ -684,7 +684,6 @@ def goodAlign(seq, bc, seqpos, bcpos, pen=0, OVERLAP = 8):
             score = 1
     except IndexError:
         _CACHE[(seqpos,bcpos)] = (0, "", "", "")
-#         print "[%s, %s]: %s" % (seqpos, bcpos, 0)
         return (0, "", "", "")
     
     # compute rest of alignment
@@ -704,12 +703,7 @@ def goodAlign(seq, bc, seqpos, bcpos, pen=0, OVERLAP = 8):
     # cache the score
     _CACHE[(seqpos,bcpos)] = score
     
-#     print "[%s, %s]: %s" % (seqpos, bcpos, score)
-    
     if score[0] >= OVERLAP:
-#         print score[1]
-#         print score[2]
-#         print score[3]
         raise BarcodeMatch
     
     return score
