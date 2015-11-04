@@ -2,9 +2,6 @@
 
 import getopt, sys, re
 
-# barcoder -h
-# barcoder [-r] -b 3[:ADSFDSAGAFDSKG] -b 1[:DSAGHGTFG] [-B BARCODE.txt] [INPUT.fa] [-s OUT.csv] > OUT.fa
-
 __VERSION__="0.1.1"
 MATCHSIM = 0.85
 
@@ -141,7 +138,6 @@ def main(argv):
     barcodes=[]
     barcodeFilename=None
     statsFilename=None
-#     residuesFilename=None
     residueSeparator="__BC__"
     
     # process arguments
@@ -160,8 +156,6 @@ def main(argv):
                 positions.append(0)
         elif o in ("-B"):
             barcodeFilename = a
-#         elif o in ("-R"):
-#             residuesFilename = a
         elif o in ("-s"):
             statsFilename = a
         elif o in ("-S"):
@@ -223,19 +217,9 @@ def barcode(inputFile, positions, barcodes, barcodeFilename, residueSeparator):
     # get input file handle
     rc = 0
     if inputFile == '-':
-        iFile = sys.stdin
         rc = barcodeFile(sys.stdin, positions, barcodes, residueSeparator)
     else:
         with open(inputFile) as iFile:
-            
-            # check for barcodes matching input sequences
-            bcmatch = False
-            for bc in barcodes:
-                #for
-                pass
-            
-            iFile.seek(0)
-            
             rc = barcodeFile(iFile, positions, barcodes, residueSeparator)
     
     return rc
@@ -348,7 +332,7 @@ class BufferedReader():
     
     def __init__(self, filename):
         self._filename = filename
-        self._iterable = None #obj.__iter__()
+        self._iterable = None
         self._isEnd = False
         self._buffer = None
     
@@ -613,19 +597,14 @@ def reconstructSequence(sid, seq, positions, barcodes, residueSeparator):
     lsp = 0
     stats = []
     statsC = _calcStats(seqOut)
-    print (seqOut)
     fullSeq = ""
     for sp in splits:
-        print (seqOut[lsp:sp])
         fullSeq += seqOut[lsp:sp]
         stats.extend(_calcStats(seqOut[lsp:sp]))
         lsp = sp+1
     # next split 
     fullSeq += seqOut[lsp:]
     stats.extend(_calcStats(seqOut[lsp:]))
-    print (seqOut[lsp:])
-    print (fullSeq)
-    print ("---")
     statsNC = _calcStats(fullSeq)
     
     outStats = [statsC[0], statsNC[1], statsC[2]]
@@ -681,15 +660,11 @@ def isMatched(seq, bc, matchSim = 0.85):
     try:
         # match with barcode at start
         for pen in range(OVERLAP-bclen,0):
-#             print "Trying: %s %s %s" % (0, -pen, pen)
-#             print "Score: %s" % 
             goodAlign(seq, bc, 0, -pen, pen, OVERLAP)[0]
             
         
         # match with equal start, seq start or barcode past end
         for seqpos in range(seqlen):
-#             print "Trying: %s %s %s" % (seqpos, 0,0)
-#             print "Score: %s" % 
             goodAlign(seq, bc, seqpos, 0, OVERLAP)[0]
         
     except BarcodeMatch:
@@ -709,7 +684,6 @@ def goodAlign(seq, bc, seqpos, bcpos, pen=0, OVERLAP = 8):
             score = 1
     except IndexError:
         _CACHE[(seqpos,bcpos)] = (0, "", "", "")
-#         print "[%s, %s]: %s" % (seqpos, bcpos, 0)
         return (0, "", "", "")
     
     # compute rest of alignment
@@ -729,12 +703,7 @@ def goodAlign(seq, bc, seqpos, bcpos, pen=0, OVERLAP = 8):
     # cache the score
     _CACHE[(seqpos,bcpos)] = score
     
-#     print "[%s, %s]: %s" % (seqpos, bcpos, score)
-    
     if score[0] >= OVERLAP:
-#         print score[1]
-#         print score[2]
-#         print score[3]
         raise BarcodeMatch
     
     return score
