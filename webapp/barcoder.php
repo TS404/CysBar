@@ -11,14 +11,14 @@ $c5 = popKey($_SESSION, 'c5', 0);
 $c6 = popKey($_SESSION, 'c6', 0);
 $c7 = popKey($_SESSION, 'c7', 0);
 $c8 = popKey($_SESSION, 'c8', 0);
-$bc1= popKey2($_SESSION, 'bc1', "pmhmmwphmmhw");
-$bc2= popKey2($_SESSION, 'bc2', "mwhmmhwhhhmw");
-$bc3= popKey2($_SESSION, 'bc3', "hmhwhwmmhwmw");
-$bc4= popKey2($_SESSION, 'bc4', "wwpmhwppkmwh");
-$bc5= popKey2($_SESSION, 'bc5', "pphhwmphwmmh");
-$bc6= popKey2($_SESSION, 'bc6', "mwwhmhphpphw");
-$bc7= popKey2($_SESSION, 'bc7', "hwmpmhwpmmwh");
-$bc8= popKey2($_SESSION, 'bc8', "pmwhwwhhpwmm");
+$bc1= popKey2($_SESSION, 'bc1', "wwyhwyyhmm");
+$bc2= popKey2($_SESSION, 'bc2', "whwmmhyhyy");
+$bc3= popKey2($_SESSION, 'bc3', "wwhhmwmmyw");
+$bc4= popKey2($_SESSION, 'bc4', "whyymmwmwm");
+$bc5= popKey2($_SESSION, 'bc5', "hwwmyhhmhw");
+$bc6= popKey2($_SESSION, 'bc6', "hmhyywhhym");
+$bc7= popKey2($_SESSION, 'bc7', "mmymwmwhhw");
+$bc8= popKey2($_SESSION, 'bc8', "myyhhmywyy");
 $seq= popKey($_SESSION, 'seq', "");
 ?>
 <!DOCTYPE html>
