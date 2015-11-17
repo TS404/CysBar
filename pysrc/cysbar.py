@@ -2,7 +2,7 @@
 
 import getopt, sys, re
 
-__VERSION__="1.0.0"
+__VERSION__="1.0.1"
 MATCHSIM = 0.85
 
 BUILT_IN_BARCODES=[
