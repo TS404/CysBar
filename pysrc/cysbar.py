@@ -2,7 +2,7 @@
 
 import getopt, sys, re
 
-__VERSION__="1.0.0"
+__VERSION__="1.0.1"
 MATCHSIM = 0.85
 
 BUILT_IN_BARCODES=[
@@ -264,7 +264,7 @@ def barcodeFile(iFile, positions, barcodes, residueSeparator):
             # endif
         # next line
         # complete final sequence
-        if seq is not None:
+        if seq != "":
             if isMatched(seq, bc, MATCHSIM):
                 bcMatch = True
                 sys.stderr.write("ERROR: %s matches barcode '%s'\n" %(sid, bc))
@@ -273,6 +273,8 @@ def barcodeFile(iFile, positions, barcodes, residueSeparator):
         return 2
     
     # reset file to start
+    sid = None
+    seq = ""
     try:
         iFile.seek(0)
     except AttributeError: # list has no seek
@@ -299,7 +301,7 @@ def barcodeFile(iFile, positions, barcodes, residueSeparator):
     # next line
     
     # complete final sequence
-    if seq is not None:
+    if seq != "":
         bcseq, residues = barcodeSequence(seq, positions, barcodes)
         print sid + residueSeparator + "".join(residues) + residueSeparator
         print bcseq
