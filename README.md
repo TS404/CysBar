@@ -65,9 +65,9 @@ INPUT.fa          Input fasta file (default = standard input)
 
 Example:
 ```
-cysbar.py -b 11 -b 22 -b 28 -b 32 -b 43 -b 50 -b 52 -b 56 example1.fa >example1_barcoded.fa
+cysbar.py -b 11 -b 22 -b 28 -b 32 -b 43 -b 50 -b 52 -b 56 -B default_barcodes.txt example1.fa >example1_barcoded.fa
 ```
-The above command will barcode the 11th, 29th... etc. columns of the `example1.fa` alignment using the deafult barcode set, creating an output alignment called `example1_barcoded.fa`. The `example1_barcoded.fa` file can then be re-aligned by any standard alignment program (e.g. ClustalΩ, Probcons, Muscle).
+The above command will barcode the 11th, 29th... etc. columns of the `example1.fa` alignment using the default barcode set provided in default_barcodes.txt, creating an output alignment called `example1_barcoded.fa`. The `example1_barcoded.fa` file can then be re-aligned by any standard alignment program (e.g. ClustalΩ, Probcons, Muscle).
 
 *Notes*:  
 When several sub-group alignments need to be combined into a single alignment barcoded alignment, the individual sub-group alignments should be barcoded independently with `cysbar.py` (as in the example figures used in the manuscript).
@@ -98,14 +98,14 @@ cysbar.py -r -s example2_stats.csv example2.fa >example2_reconstructed.fa
 The above command will restore the original sequences of the `example2.fa` alignment, creating an output alignment called `example2_reconstructed.fa` and a summary of statistics called `example2_stats.csv`.
 
 *Notes*:  
-If the default barcodes was used, `-b` arguments are unnecessary since the script will search for the default barcode sequences. If custom barcode sequences were used, the same sequences must be definied in the `cysbar.py -r` command. For calculating loop properties, all cysteines are assumed to be oxidised (i.e. involved in disulphide bridges).
+If the default barcodes was used, `-b` arguments are unnecessary since the script will search for the default barcode sequences. If custom barcode sequences were used, the same sequences must be defined in the `cysbar.py -r` command. For calculating loop properties, all cysteines are assumed to be oxidised (i.e. involved in disulphide bridges).
 
 
 ### 5 Using loopproperties.xlsx
 
-If `cysbar.py -r` has been commanded to generate a statistics summary csv file (`-s`argument), the data from this can be copy-pasted into `loopproperties.xlsx` which will provide summary graphs. To use it follow these steps:
+If `cysbar.py -r` has been commanded to generate a statistics summary csv file (`-s` argument), the data from this can be copy-pasted into `loopproperties.xlsx` which will provide summary graphs. To use it follow these steps:
 
-1. In Excel, open both the stastistics csv file and `loopproperties.xlsx`
+1. In Excel, open both the statistics csv file and `loopproperties.xlsx`
 2. Copy the whole spreadsheet of the statistics csv file
 3. Paste the copied contents into the first worksheet page of `loopproperties.xlsx`
 4. The subsequent worksheets of `loopproperties.xlsx` give the following information:  
@@ -115,4 +115,4 @@ If `cysbar.py -r` has been commanded to generate a statistics summary csv file (
  d. Figures – a summary of bar charts and histograms from the other sheets  
 
 *Notes*:  
-This spreadcheet only functions for a maximum of 8 barcoded columns. Parameters with no data (e.g. the charge of a loop with length zero) are marked with 1E-100 to distinguish from true zero values (e.g. the charge of a neutral loop). These 1E-100 values are ignored when generating the subsequent charts.
+This spreadsheet only functions for a maximum of 8 barcoded columns. Parameters with no data (e.g. the charge of a loop with length zero) are marked with 1E-100 to distinguish from true zero values (e.g. the charge of a neutral loop). These 1E-100 values are ignored when generating the subsequent charts.
