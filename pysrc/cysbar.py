@@ -331,6 +331,7 @@ class BufferedReader():
         self._buffer = None
     
     def _checkOpen(self):
+        '''Safely open the stream (if needed)'''
         if self._iterable is None:
             if self._filename == '-':
                 self._iterable = sys.stdin
@@ -338,9 +339,11 @@ class BufferedReader():
                 self._iterable = open(self._filename)
     
     def __iter__(self):
+        '''Get (self) as iterable'''
         return self
     
     def next(self):
+        '''Next method to allow this class to be a python iterable'''
         self._checkOpen()
         if self._isEnd:
             raise StopIteration
@@ -361,6 +364,7 @@ class BufferedReader():
         return self._buffer
     
     def close(self):
+        '''Closes the underlying interator stream (if not stdin)'''
         if self._iterable != sys.stdin:
             self._iterable.close()
 # end BufferedReader()
@@ -457,11 +461,16 @@ def reconstruct(inputFilenames, positions, barcodes, barcodeFilename, statsFilen
 
 def _loadHydroChargeFile(filename):
     '''Updates the Hydropathy and Charge values based on the contents of CSV file'''
+    
     with open(filename) as iFile:
         HYDROPATHY.clear()
         CHARGE.clear()
+        
+        # read each line
         for line in iFile:
             cols = line.rstrip().split(",")
+            
+            # ignore empty and comment lines
             if not line.startswith("#") and len(cols) != 0:
                 if len(cols) in (2,3) and len(cols[0]) == 1:
                     cols[1] = cols[1].strip()
@@ -671,6 +680,8 @@ def isMatched(seq, bc, matchSim = 0.85):
     
 
 def goodAlign(seq, bc, seqpos, bcpos, pen=0, OVERLAP = 8):
+    '''Tree-recusively checks for an alignment of bc in seq allowing for mismatchs and indels'''
+    
     if (seqpos,bcpos) in _CACHE:
         return _CACHE[(seqpos,bcpos)]
     
