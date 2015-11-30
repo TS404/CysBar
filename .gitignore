@@ -5,3 +5,5 @@ webapp/img/*
 .settings
 .project
 .pydevproject
+*.pyc
+
