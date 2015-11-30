@@ -5,6 +5,8 @@ import getopt, sys, re
 __VERSION__="1.0.1"
 MATCHSIM = 0.85
 
+# default values
+# (so cysbar can be used standalone)
 BUILT_IN_BARCODES=[
     "wwyhwyyhmm",
     "whwmmhyhyy",
@@ -49,74 +51,38 @@ BUILT_IN_BARCODES=[
     "hhwhywhyhm",
     "whmmyyhyww",
     "wmhywhymyh",
-
-    "wmhymyhwyw",
-    "wywyhhmymm",
-    "hmmwwhyywy",
-    "hmywmywywh",
-    "hywymhywwm",
-    "hyywmhymhw",
-    "mmhmyywhwy",
-    "myyhwymwhh",
-    "mymywhhwym",
-    "yywhwmywhm",
-
-    "whwmwyyhmh",
-    "whwymmyhhw",
-    "whhmymwmyh",
-    "whmywmhmwy",
-    "wmywywmhmh",
-    "wmyhhmwhym",
-    "wyhhywmmhm",
-    "wyymwhhmhm",
-    "hmhyymmwhw",
-    "hmywwyhhmm",
-
-    "hywwhmwyhm",
-    "mwyyhmhhwm",
-    "mhwwyywhhm",
-    "mhhyyhwmmw",
-    "mmhwyhhyww",
-    "mhywwmyhwh",
-    "ywmhmmhwhy",
-    "yymmhhwwmw",
-    "ymwhmyhmhw",
-    "yyhmmwmhwh",
-
-    "wwhhmwmyyw",
-    "wwhhyhhmmy",
-    "wwyywwmmhh",
-    "whwwhwymmy",
-    "whwhmywymw",
-    "whhwyymyym",
-    "wwmmymhhym",
-    "hwwmwwmyyh",
-    "hhmhhmyyww",
-    "hhmmymmwwy",
-
-    "hhwyhmhwmy",
-    "hmhyywwyym",
-    "hmwywmmhym",
-    "hmhhwmhwyy",
-    "hmymhhwwyh",
-    "hywhmymwyy",
-    "mhwhywmwyw",
-    "mwwhyhyhmh",
-    "mhwmmhmywy",
-    "mywwhyhmyy",
-
-    "mymhwhymmw",
-    "ywmmhwyhmm",
-    "yhmhymwmwm",
-    "yywwmhhyym",
-    "wwhwmyhyhy",
-    "wwywhyyhhm",
-    "whhyhyymww",
-    "wwmhyywyhh",
-    "wmyhhyywwh",
-    "wyhyhmwywh",
-
 ]
+
+HYDROPATHY={
+    "A": +1.8,
+#     "C": +2.5,
+    "D": -3.5,
+    "E": -3.5,
+    "F": +2.8,
+    "G": -0.4,
+    "H": -3.2,
+    "I": +4.5,
+    "K": -3.9,
+    "L": +3.8,
+    "M": +1.9,
+    "N": -3.5,
+    "P": -1.6,
+    "Q": -3.5,
+    "R": -4.5,
+    "S": -0.8,
+    "T": -0.7,
+    "V": +4.2,
+    "W": -0.9,
+    "Y": -1.3,
+}
+
+CHARGE={
+    "D": -1,
+    "E": -1,
+    "K": +1,
+    "R": +1,
+#     "H": +0.1,
+}
 
 
 def main(argv):
@@ -124,7 +90,7 @@ def main(argv):
     
     # parse arguments
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hrb:B:s:S:")
+        opts, args = getopt.getopt(sys.argv[1:], "hrb:B:s:S:v:")
     except getopt.GetoptError as err:
         # print help information and exit:
         sys.strerr.write("%s\n" %str(err))
@@ -138,6 +104,7 @@ def main(argv):
     barcodes=[]
     barcodeFilename=None
     statsFilename=None
+    statsValuesFilename=None
     residueSeparator="__BC__"
     
     # process arguments
@@ -160,8 +127,10 @@ def main(argv):
             statsFilename = a
         elif o in ("-S"):
             residueSeparator = a
+        elif o in ("-v"):
+            statsValuesFilename = a
         else:
-            sys.stderr.write("Unknown option: %s\n" % o)
+            _writeError("Unknown option: %s\n" % o)
             usage(outstream=sys.stderr)
             return 1
     # next argument
@@ -170,11 +139,26 @@ def main(argv):
     if barcodeMode:
         for pos in positions:
             if pos < 1:
-                sys.stderr.write("Error: Positions need to be greater than 0 (found: %s)\n" % pos)
+                _writeError("Error: Positions need to be greater than 0 (found: %s)\n" % pos)
                 usage(outstream=sys.stderr)
                 return 2
     else:
         pass
+    
+    # fix order of positions (if necessary)
+    grouped = []
+    seenPos = set([])
+    for i in range(len(positions)):
+        if positions[i] in seenPos:
+            _writeError("Error: Cannot barcode a residue twice (%s seen twice)\n" % pos)
+        grouped.append((positions[i], barcodes[i]))
+        seenPos = positions[i]
+    grouped.sort()
+    positions = []
+    barcodes = []
+    for p, b in grouped:
+        positions.append(p)
+        barcodes.append(b)
     
     # do work
     if barcodeMode:
@@ -184,7 +168,7 @@ def main(argv):
                 return rc
         # next file
     else:
-        rc = reconstruct(inputFilenames, positions, barcodes, barcodeFilename, statsFilename, residueSeparator)
+        rc = reconstruct(inputFilenames, positions, barcodes, barcodeFilename, statsFilename, residueSeparator, statsValuesFilename)
         if rc != 0:
             return rc
         # next file
@@ -211,7 +195,7 @@ def barcode(inputFile, positions, barcodes, barcodeFilename, residueSeparator):
     
     # check enough barcodes are present
     if len(barcodes) < len(positions):
-        sys.stderr.write("Error: not enough barcodes were provided (or built in).  Please provide more\n")
+        _writeError("Error: not enough barcodes were provided (or built in).  Please provide more\n")
         return 1
     
     # get input file handle
@@ -251,11 +235,11 @@ def barcodeFile(iFile, positions, barcodes, residueSeparator):
                 if sid is not None:
                     if isMatched(seq.lower(), bc, MATCHSIM):
                         bcMatch = True
-                        sys.stderr.write("ERROR: %s matches barcode '%s'\n" %(sid, bc))
+                        _writeError("ERROR: %s matches barcode '%s'\n" %(sid, bc))
                     
                     seq = ""
                 elif seq != "":
-                    sys.stderr.write("Error: input file doesn't appear to be a FastA formatted file\n")
+                    _writeError("Error: input file doesn't appear to be a FastA formatted file\n")
                     return 1
                 
                 sid = line
@@ -267,7 +251,7 @@ def barcodeFile(iFile, positions, barcodes, residueSeparator):
         if seq != "":
             if isMatched(seq, bc, MATCHSIM):
                 bcMatch = True
-                sys.stderr.write("ERROR: %s matches barcode '%s'\n" %(sid, bc))
+                _writeError("ERROR: %s matches barcode '%s'\n" %(sid, bc))
     # next barcode
     if bcMatch:
         return 2
@@ -286,12 +270,12 @@ def barcodeFile(iFile, positions, barcodes, residueSeparator):
             # complete last sequence
             if sid is not None:
                 bcseq, residues = barcodeSequence(seq, positions, barcodes)
-                print sid + residueSeparator + "".join(residues) + residueSeparator
-                print bcseq
+                _writeOutput(sid + residueSeparator + "".join(residues) + residueSeparator)
+                _writeOutput(bcseq)
                 
                 seq = ""
             elif seq != "":
-                sys.stderr.write("Error: input file doesn't appear to be a FastA formatted file\n")
+                _writeError("Error: input file doesn't appear to be a FastA formatted file\n")
                 return 1
             
             sid = line
@@ -303,14 +287,18 @@ def barcodeFile(iFile, positions, barcodes, residueSeparator):
     # complete final sequence
     if seq != "":
         bcseq, residues = barcodeSequence(seq, positions, barcodes)
-        print sid + residueSeparator + "".join(residues) + residueSeparator
-        print bcseq
+        _writeOutput(sid + residueSeparator + "".join(residues) + residueSeparator)
+        _writeOutput(bcseq)
         
     return 0
 # end barcodeFile()
 
 def barcodeSequence(seq, positions, barcodes):
-    '''Barcodes a single sequence at specified positions'''
+    '''
+    Barcodes a single sequence at specified positions.
+    
+    Positions list must be in order from lowest to highest
+    '''
     result = []
     residues = []
         
@@ -318,6 +306,10 @@ def barcodeSequence(seq, positions, barcodes):
     lastpos = 0
     i = 0
     for pos in positions:
+        
+        # enforce position ordering
+        if lastpos >= pos:
+            return ("",[])
         result.append(seq[lastpos:pos-1])
         result.append(barcodes[i])
         residues.append(seq[pos-1:pos])
@@ -373,7 +365,7 @@ class BufferedReader():
             self._iterable.close()
 # end BufferedReader()
 
-def reconstruct(inputFilenames, positions, barcodes, barcodeFilename, statsFilename, residueSeparator):
+def reconstruct(inputFilenames, positions, barcodes, barcodeFilename, statsFilename, residueSeparator, statsValuesFilename):
     '''Removes barcodes and replaces residues'''
     
     if len(inputFilenames) < 1:
@@ -390,7 +382,7 @@ def reconstruct(inputFilenames, positions, barcodes, barcodeFilename, statsFilen
         if line is None:
             return 0
         if len(line) > 0 and line[0] != ">":
-            sys.stderr.write("Error: input file doesn't appear to be a FastA formatted file\n")
+            _writeError("Error: input file doesn't appear to be a FastA formatted file\n")
             return 1
         parts = line.split(residueSeparator, 2)
         if len(parts) > 1:
@@ -406,6 +398,13 @@ def reconstruct(inputFilenames, positions, barcodes, barcodeFilename, statsFilen
             # next line
         # close iFile
     # endif barcodeFilename
+    
+    # read stats values if needed
+    if statsValuesFilename is not None:
+        if not _loadHydroChargeFile(statsValuesFilename):
+            return 4
+                
+    # endif statsValuesFilename
     
     # open stats file
     statsFile = None
@@ -432,7 +431,7 @@ def reconstruct(inputFilenames, positions, barcodes, barcodeFilename, statsFilen
     
     # check enough barcodes are present
     if len(barcodes) < len(positions):
-        sys.stderr.write("Error: not enough barcodes were provided (or built in).  Please provide more\n")
+        _writeError("Error: not enough barcodes were provided (or built in).  Please provide more\n")
         return 2
 
     # process the files
@@ -452,8 +451,31 @@ def reconstruct(inputFilenames, positions, barcodes, barcodeFilename, statsFilen
     if statsFile is not None:
         statsFile.close()
     
+    return 0
 # end reconstruct()
 
+
+def _loadHydroChargeFile(filename):
+    '''Updates the Hydropathy and Charge values based on the contents of CSV file'''
+    with open(filename) as iFile:
+        HYDROPATHY.clear()
+        CHARGE.clear()
+        for line in iFile:
+            cols = line.rstrip().split(",")
+            if not line.startswith("#") and len(cols) != 0:
+                if len(cols) in (2,3) and len(cols[0]) == 1:
+                    cols[1] = cols[1].strip()
+                    if cols[1] != "":
+                        HYDROPATHY[cols[0].upper()] = float(cols[1])
+                    if len(cols) == 3:
+                        cols[2] = cols[2].strip()
+                        if cols[2] != "":
+                            CHARGE[cols[0].upper()] = float(cols[2].strip())
+                else:
+                    _writeError("Error: Unable to read Hydropathy and Charge values file.\n")
+                    _writeError("       Expected CSV format no header and columns Residue, Hydropathy and Charge.\n")
+                    return False
+    return True
 
 def reconstructFile(iFile, positions, barcodes, residueSeparator, statsFile=None):
     '''Removes barcodes and replaces residues for a file handle'''
@@ -466,12 +488,12 @@ def reconstructFile(iFile, positions, barcodes, residueSeparator, statsFile=None
             # complete last sequence
             if sid is not None:
                 seqid, rcseq, stats = reconstructSequence(sid, seq, positions, barcodes, residueSeparator)
-                print seqid
-                print rcseq
+                _writeOutput(seqid)
+                _writeOutput(rcseq)
                 if statsFile is not None:
                     statsFile.write("%s,%s\n" % (seqid, ",".join(stats)))
             elif seq != "":
-                sys.stderr.write("Error: input file doesn't appear to be a FastA formatted file\n")
+                _writeError("Error: input file doesn't appear to be a FastA formatted file\n")
                 return 1
             
             sid = line
@@ -484,13 +506,14 @@ def reconstructFile(iFile, positions, barcodes, residueSeparator, statsFile=None
     # complete final sequence
     if sid is not None:
         seqid, rcseq, stats = reconstructSequence(sid, seq, positions, barcodes, residueSeparator)
-        print seqid
-        print rcseq
+        _writeOutput(seqid)
+        _writeOutput(rcseq)
         if statsFile is not None:
             statsFile.write("%s,%s\n" % (seqid, ",".join(stats)))
     elif seq != "":
-        sys.stderr.write("Error: input file doesn't appear to be a FastA formatted file\n")
+        _writeError("Error: input file doesn't appear to be a FastA formatted file\n")
         return 1
+    return 0
 
 # end reconstructFile()
 
@@ -499,37 +522,6 @@ def _fixSplit(s, bc, bcp):
     if s < bcp:
         return s
     return s - len(bc) + 1
-
-HYDROPATHY={
-    "A": +1.8,
-#     "C": +2.5,
-    "D": -3.5,
-    "E": -3.5,
-    "F": +2.8,
-    "G": -0.4,
-    "H": -3.2,
-    "I": +4.5,
-    "K": -3.9,
-    "L": +3.8,
-    "M": +1.9,
-    "N": -3.5,
-    "P": -1.6,
-    "Q": -3.5,
-    "R": -4.5,
-    "S": -0.8,
-    "T": -0.7,
-    "V": +4.2,
-    "W": -0.9,
-    "Y": -1.3,
-}
-
-CHARGE={
-    "D": -1,
-    "E": -1,
-    "K": +1,
-    "R": +1,
-#     "H": +0.1,
-}
 
 def _calcStats(seq):
     '''Returns stats for the given sequence'''
@@ -591,7 +583,7 @@ def reconstructSequence(sid, seq, positions, barcodes, residueSeparator):
             splits = map(lambda s: _fixSplit(s, bc, bcp), splits)
             splits.append(bcp)
         else:
-            sys.stderr.write("Warning: barcode '%s' not found in sequence '%s'\n" % (bc, seq))
+            _writeError("Warning: barcode '%s' not found in sequence '%s'\n" % (bc, seq))
         seqOut = seqOut.replace(bc, residue, 1)
     
     # calculate stats
@@ -620,20 +612,23 @@ def usage(longMsg=False, outstream=sys.stdout):
     outstream.write("usage: %s -b POS1[:BARCODE1] [-b POS2[:BARCODE2] [-b ...]] [-B BARCODE.txt]\n" % sys.argv[0])
     outstream.write("                [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] > OUTPUT.fa\n")
     outstream.write("       %s -r [-b [POS1]:BARCODE1] [-b [POS2]:BARCODE2 [-b ...]] [-B BARCODE.txt]\n" % sys.argv[0])
-    outstream.write("                [-s OUTPUT.csv] [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] > OUTPUT.fa\n")
+    outstream.write("                [-s OUTPUT.csv] [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] ")
+    outstream.write("                [-v HYDROCHARGE.csv] > OUTPUT.fa\n")
     outstream.write("       %s -h | --help\n" % sys.argv[0])
     if longMsg is True:
         outstream.write("\n")
-        outstream.write(" -h, --help        Print this help information\n")
-        outstream.write(" -r                Operate in reconstruction mode (i.e. restoring residues)\n")
-        outstream.write(" -b POS[:BARCODE]  Specify the POSition to replace with BARCODE\n")
-        outstream.write("    POS            Residue index (1-based number) to replace in each sequence\n")
-        outstream.write("    BARCODE        Custom barcode to use at this position.  Uses built-in (or see -B option)\n")
-        outstream.write(" -B BARCODE.txt    Use file named BARCODE.txt to source barcodes from, one per line\n")
-        outstream.write(" -s OUTPUT.csv     Produce (and store) summary statistics file named OUTPUT.csv\n")
-        outstream.write(" -S SEPARATOR      String to enclose replaced residues in FastA ID (Default: '__BC__')\n")
-        outstream.write(" INPUT.fa          Input FastA file. (default: standard input)\n")
-        outstream.write(" > OUTPUT.fa       Output FastA file. (default: standard output)\n")
+        outstream.write(" -h, --help          Print this help information\n")
+        outstream.write(" -r                  Operate in reconstruction mode (i.e. restoring residues)\n")
+        outstream.write(" -b POS[:BARCODE]    Specify the POSition to replace with BARCODE\n")
+        outstream.write("    POS              Residue index (1-based number) to replace in each sequence\n")
+        outstream.write("    BARCODE          Custom barcode to use at this position.  Uses built-in (or see -B option)\n")
+        outstream.write(" -B BARCODE.txt      Use file named BARCODE.txt to source barcodes from, one per line\n")
+        outstream.write(" -s OUTPUT.csv       Produce (and store) summary statistics file named OUTPUT.csv\n")
+        outstream.write(" -S SEPARATOR        String to enclose replaced residues in FastA ID (Default: '__BC__')\n")
+        outstream.write(" -v HYDROCHARGE.csv  CSV file containing new Hydropathy and Charge values for each residue.\n")
+        outstream.write("                     Contains Residue, Hydropathy and Charge columns (no headers).\n")
+        outstream.write(" INPUT.fa            Input FastA file. (default: standard input)\n")
+        outstream.write(" > OUTPUT.fa         Output FastA file. (default: standard output)\n")
     # end if long
     
     outstream.write("\n")
@@ -711,7 +706,13 @@ def goodAlign(seq, bc, seqpos, bcpos, pen=0, OVERLAP = 8):
     return score
 # end goodAlign
 
+def _writeError(error):
+    '''Writes an error to stderr'''
+    sys.stderr.write(error)
 
+def _writeOutput(output):
+    '''Writes output to stdout'''
+    print output
 
 
 
