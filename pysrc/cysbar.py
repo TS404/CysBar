@@ -126,7 +126,7 @@ def main(argv):
             statsFilename = a
         elif o in ("-S"):
             residueSeparator = a
-        elif o in ("-v"):
+        elif o in ("-V"):
             statsValuesFilename = a
         else:
             _writeError("Unknown option: %s\n" % o)
@@ -621,7 +621,7 @@ def usage(longMsg=False, outstream=sys.stdout):
     outstream.write("                [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] > OUTPUT.fa\n")
     outstream.write("       %s -r [-b [POS1]:BARCODE1] [-b [POS2]:BARCODE2 [-b ...]] [-B BARCODE.txt]\n" % sys.argv[0])
     outstream.write("                [-s OUTPUT.csv] [-S SEPARATOR] [INPUT.fa [INPUT2.fa ...]] ")
-    outstream.write("                [-v HYDROCHARGE.csv] > OUTPUT.fa\n")
+    outstream.write("                [-V VARIABLES.csv] > OUTPUT.fa\n")
     outstream.write("       %s -h | --help\n" % sys.argv[0])
     if longMsg is True:
         outstream.write("\n")
@@ -633,7 +633,7 @@ def usage(longMsg=False, outstream=sys.stdout):
         outstream.write(" -B BARCODE.txt      Use file named BARCODE.txt to source barcodes from, one per line\n")
         outstream.write(" -s OUTPUT.csv       Produce (and store) summary statistics file named OUTPUT.csv\n")
         outstream.write(" -S SEPARATOR        String to enclose replaced residues in FastA ID (Default: '__BC__')\n")
-        outstream.write(" -v HYDROCHARGE.csv  CSV file containing new Hydropathy and Charge values for each residue.\n")
+        outstream.write(" -V VARIABLES.csv    Use file named VARIABLES.csv to source hydropathy and charge variables from\n")
         outstream.write("                     Contains Residue, Hydropathy and Charge columns (no headers).\n")
         outstream.write(" INPUT.fa            Input FastA file. (default: standard input)\n")
         outstream.write(" > OUTPUT.fa         Output FastA file. (default: standard output)\n")
