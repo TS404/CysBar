@@ -2,7 +2,7 @@
 
 import getopt, sys, re
 
-__VERSION__="1.0.1"
+__VERSION__="1.1.0"
 MATCHSIM = 0.85
 
 # default values
@@ -55,7 +55,7 @@ BUILT_IN_BARCODES=[
 
 HYDROPATHY={
     "A": +1.8,
-#     "C": +2.5,
+#   "C": +2.5,
     "D": -3.5,
     "E": -3.5,
     "F": +2.8,
@@ -81,7 +81,6 @@ CHARGE={
     "E": -1,
     "K": +1,
     "R": +1,
-#     "H": +0.1,
 }
 
 
