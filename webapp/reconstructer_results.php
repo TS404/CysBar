@@ -65,6 +65,7 @@ else { print "No results found, please contact the system administrator"; } ?></
 		</table>
 	</div>
 	<h2>Analysis</h2>
+        <div class="headertext">This Excel spreadsheet provides a set of standard graphs when the csv data above is pasted into the first sheet</div>
 	<div class="analysis">
 		<table class="results">
 		<tbody>
