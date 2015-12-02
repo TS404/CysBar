@@ -18,7 +18,7 @@ include_once("config.php");
 
 	<div class="linkgroup">
 		<div class="linksect"><a href="barcoder.php">Step 1: Barcoder</a></div>
-		<div class="descsect">A tool to replace columns of an alignment with 12 amino acid barcode sequences</div>
+		<div class="descsect">A tool to replace columns of an alignment with 10 amino acid barcode sequences</div>
 	</div>
 
 	<div class="linkgroup">
