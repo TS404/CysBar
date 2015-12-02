@@ -3,14 +3,34 @@ session_start();
 include_once("config.php");
 include_once("support.php");
 
-$c1 = popKey($_SESSION, 'c1', 0);
-$c2 = popKey($_SESSION, 'c2', 0);
-$c3 = popKey($_SESSION, 'c3', 0);
-$c4 = popKey($_SESSION, 'c4', 0);
-$c5 = popKey($_SESSION, 'c5', 0);
-$c6 = popKey($_SESSION, 'c6', 0);
-$c7 = popKey($_SESSION, 'c7', 0);
-$c8 = popKey($_SESSION, 'c8', 0);
+if (popKey($_GET, 'demo', 0) == '1') {
+	$c1 = "11";
+	$c2 = "22";
+	$c3 = "28";
+	$c4 = "32";
+	$c5 = "43";
+	$c6 = "50";
+	$c7 = "52";
+	$c8 = "56";
+	$seq= ">NaD1(1MR4) (N. alata - NaD1) gi|159162710|
+--------RECKTESNTFPGICITKPPCRKAC-ISEKFTDGHCSKILRRCLCTKPC
+>GmD3 (G. max - prob LOC102669975) gi|571550504|
+CFCYFSCPGLCAKRSKTWSGWCGSSNNCDKQCRTKEGATHGACH------------
+>AtD221 (A. thaliana - DLP266) gi|332196243|
+-------------------GSCNNDNTCHDTC---PGCRITQC--IFRQCVCTR-C
+>TsD1 (T. species - Ts-PDF) [no gi]
+--------KMCQTTSHAFS--CVNDSGCSGSC-EKQGFASGKCDGVRRRCTCYEKC";
+} else {
+	$c1 = popKey($_SESSION, 'c1', 0);
+	$c2 = popKey($_SESSION, 'c2', 0);
+	$c3 = popKey($_SESSION, 'c3', 0);
+	$c4 = popKey($_SESSION, 'c4', 0);
+	$c5 = popKey($_SESSION, 'c5', 0);
+	$c6 = popKey($_SESSION, 'c6', 0);
+	$c7 = popKey($_SESSION, 'c7', 0);
+	$c8 = popKey($_SESSION, 'c8', 0);
+	$seq= popKey($_SESSION, 'seq', "");
+}
 $bc1= popKey2($_SESSION, 'bc1', "wwyhwyyhmm");
 $bc2= popKey2($_SESSION, 'bc2', "whwmmhyhyy");
 $bc3= popKey2($_SESSION, 'bc3', "wwhhmwmmyw");
@@ -19,7 +39,6 @@ $bc5= popKey2($_SESSION, 'bc5', "hwwmyhhmhw");
 $bc6= popKey2($_SESSION, 'bc6', "hmhyywhhym");
 $bc7= popKey2($_SESSION, 'bc7', "mmymwmwhhw");
 $bc8= popKey2($_SESSION, 'bc8', "myyhhmywyy");
-$seq= popKey($_SESSION, 'seq', "");
 ?>
 <!DOCTYPE html>
 <html>
@@ -36,6 +55,7 @@ $seq= popKey($_SESSION, 'seq', "");
 	<hr class="rule"/>
 	<div class="headertext"><strong>Description</strong>: This tool replaces columns of an alignment with 12 amino acid barcode sequences. Barcoding cysteines prevents their misalignment in cystine-rich, highly divergent sequences.</div>
 	<div class="headertext"><strong>Instructions</strong>: Paste the sequence alignment (fasta format) into the box below. Specify the alignment columns to be barcoded. Default barcode sequences can be changed if desired. The output alignment from this tool can be re-aligned using any standard alignment tool with the barcoded columns constrianed to align. Please save the Job Number for later use in the reconstructer tool.</div>
+	<div class="headertext"><strong>Demo Data</strong>: <a href="?demo=1">Load demo data</a></div>
 
 <?php
     if (isset($_SESSION['msg'])) {
