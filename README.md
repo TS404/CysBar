@@ -24,9 +24,11 @@ Arguments:
    POS            Residue index (1-based number) to replace in each sequence
    BARCODE        Custom barcode to use at this position (or see -B option)
 -B BARCODE.txt    Use file named BARCODE.txt to source barcodes from (one per line)
--V VARIABLES.csv  Use file named VARIABLES.csv to source hydropathy and charge variables,
-                  Contains Residue, Hydropathy and Charge columns (no headers)
--S SEPARATOR      String to enclose replaced residues when placed in FastA ID (Default: '__BC__')
+-V VARIABLES.csv  Use file named VARIABLES.csv to source hydropathy and charge
+                  variables. Contains Residue, Hydropathy and Charge columns
+                  (no headers)
+-S SEPARATOR      String to enclose replaced residues when placed in FastA ID
+                  (Default: '__BC__')
 INPUT.fa          Input fasta file (default = standard input)
 > OUTPUT.fa       Output fasta file (default = standard output)
 ```
@@ -60,7 +62,8 @@ Optional arguments:
 ```
 -b POS:BARCODE    Use a custom barcode at this position
 -B BARCODE.txt    Use file named BARCODE.txt to source barcodes from (one per line)
--S SEPARATOR      String to enclose replaced residues when placed in FastA ID (Default: '__BC__')
+-S SEPARATOR      String to enclose replaced residues when placed in FastA ID
+                  (Default: '__BC__')
 INPUT.fa          Input fasta file (default = standard input)
 > OUTPUT.fa       Output fasta file (default = standard output)
 ```
@@ -88,9 +91,11 @@ Optional arguments:
 -s OUTPUT.csv     Produce (and save) summary statistics file named OUTPUT.csv
 -b POS:BARCODE    Define the custom barcode used at this position
 -B BARCODE.txt    Use file named BARCODE.txt to source used barcodes, one per line
--V VARIABLES.csv  Use file named VARIABLES.csv to source hydropathy and charge variables,
-                  Contains Residue, Hydropathy and Charge columns (no headers)
--S SEPARATOR      String that was used to enclose replaced residues in the FastA ID (Default: '__BC__')
+-V VARIABLES.csv  Use file named VARIABLES.csv to source hydropathy and charge
+                  variables. Contains Residue, Hydropathy and Charge columns
+                  (no headers)
+-S SEPARATOR      String that was used to enclose replaced residues in the FastA ID
+                  (Default: '__BC__')
 INPUT.fa          Input fasta file (default = standard input)
 > OUTPUT.fa       Output fasta file (default = standard output)
 ```
