@@ -146,19 +146,7 @@ def main(argv):
         pass
     
     # fix order of positions (if necessary)
-    grouped = []
-    seenPos = set([])
-    for i in range(len(positions)):
-        if positions[i] in seenPos:
-            _writeError("Error: Cannot barcode a residue twice (%s seen twice)\n" % pos)
-        grouped.append((positions[i], barcodes[i]))
-        seenPos = positions[i]
-    grouped.sort()
-    positions = []
-    barcodes = []
-    for p, b in grouped:
-        positions.append(p)
-        barcodes.append(b)
+    positions.sort()
     
     # do work
     if barcodeMode:
