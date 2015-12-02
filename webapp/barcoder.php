@@ -55,7 +55,7 @@ $bc8= popKey2($_SESSION, 'bc8', "myyhhmywyy");
 	<hr class="rule"/>
 	<div class="headertext"><strong>Description</strong>: This tool replaces columns of an alignment with 10 amino acid barcode sequences. Barcoding cysteines prevents their misalignment in cystine-rich, highly divergent sequences.</div>
 	<div class="headertext"><strong>Instructions</strong>: Paste the sequence alignment (fasta format) into the box below. Specify the alignment columns to be barcoded. Default barcode sequences can be changed if desired. To barcode more tahn 8 columns, please use the command line python tool, available <a href="https://github.com/TS404/CysBar">here</a>. The output alignment from this tool can be re-aligned using any standard alignment tool with the barcoded columns constrianed to align. Please save the Job Number for later use in the reconstructer tool.</div>
-	<div class="headertext"><strong>Demo Data</strong>: <a href="?demo=1">Load demo data</a></div>
+	<div class="headertext"><strong>Demo Data</strong>: <a href="?demo=1">Load example data</a></div>
 
 <?php
     if (isset($_SESSION['msg'])) {
