@@ -28,8 +28,8 @@ $RECON_INPUTFILE="align.fa";
 $RECON_OUTPUTFILE="recon.fa";
 $RECON_STATSFILE="loopstats.csv";
 
-$APP_TITLE_SHORT="Protein alignment accessory tools";
-$APP_TITLE_LONG="Barcoder and Reconstructer protein alignment accessory tools";
+$APP_TITLE_SHORT="CysBar online";
+$APP_TITLE_LONG="CysBar protein alignment accessory tools";
 
 # size in bytes of maximum size of sequences per run
 $MAX_SEQ_SIZE=1048576;
