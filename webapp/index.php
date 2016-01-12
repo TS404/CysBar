@@ -29,8 +29,13 @@ include_once("config.php");
 	<hr class="rule"/>
 
 	<div class="linkgroup">
+		<div class="linksect"><a href="http://www.springerplus.com/content/5/January/2016">Citation</a></div>
+		<div class="descsect">This method was published in SpringerPlus (2016) 5:27</div>
+	</div>
+
+	<div class="linkgroup">
 		<div class="linksect"><a href="https://github.com/TS404/CysBar">Script Downloads</a></div>
-		<div class="descsect">You can download the scripts used on this website from our GitHub repository</div>
+		<div class="descsect">The ReadMe scripts used on this website are avaiable from our GitHub repository</div>
 	</div>
 
 	<hr class="rule"/>
