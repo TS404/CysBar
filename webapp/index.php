@@ -29,7 +29,7 @@ include_once("config.php");
 	<hr class="rule"/>
 
 	<div class="linkgroup">
-		<div class="linksect"><a href="http://www.springerplus.com/content/5/January/2016">Citation</a></div>
+		<div class="linksect"><a href="http://link.springer.com/article/10.1186/s40064-015-1609-z">Citation</a></div>
 		<div class="descsect">This method was published in SpringerPlus (2016) 5:27</div>
 	</div>
 
