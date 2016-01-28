@@ -6,7 +6,7 @@ Readme for running cysbar.py locally
 >College of Science, Health and Engineering, La Trobe University, Melbourne, Australia  
 >Life Sciences Computation Centre, Victorian Life Sciences Computation Initiative, Melbourne, Australia
 
->[SpringerPlus *2016, 5:27*](http://www.springerplus.com/content/5/1/27)
+>[SpringerPlus *2016, 5:27*](http://link.springer.com/article/10.1186/s40064-015-1609-z)
 
 Usage
 -----
